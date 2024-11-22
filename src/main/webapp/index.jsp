@@ -2,27 +2,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
     <title>JSP - Hello World</title>
 </head>
 <body>
-<h1><%= "Hello World!" %></h1>
-<h1><%= "Hello World!" %></h1>
-<h1><%= "Hello World!" %></h1>
-<h1><%= "Hello World!" %></h1>
-<h1><%= "Hello World!" %></h1>
-<h1><%= "Hello World!" %></h1>
-<h1><%= "Hello World!" %></h1>
-<h1><%= "Hello World!" %></h1>
-<h1><%= "Hello World!" %></h1>
-<h1><%= "Hello World!" %></h1>
-<h1><%= "Hello World!" %></h1>
-<br/>
-<a href="hello-servlet">Hello Servlet</a>
-<p>
-    <a href="${pageContext.request.contextPath}/9">Go to 9</a>
-</p>
-<form action="${pageContext.request.contextPath}/9" method="post">
-    <input type="submit" value="Go to 9" />
-</form>
+<a href="${pageContext.request.contextPath}/board">Board</a>
 </body>
 </html>
