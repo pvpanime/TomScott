@@ -1,18 +1,11 @@
 package dev.nemi.tomscott.board;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class BoardService {
   public static final Path boardDirectory;
@@ -29,43 +22,35 @@ public class BoardService {
     }
   }
 
-  public static void set(BoardDTO boardDTO) throws IOException {
-    String name = boardDTO.title;
-    byte[] content = boardDTO.content.getBytes(StandardCharsets.UTF_8);
-    Path filePath = boardDirectory.resolve(name + ".md");
-    Files.write(filePath, content);
+  public static void createNew(String title, String content) throws SQLException {
+    new BoardDAO().addNew(title, content);
   }
 
-  public static BoardDTO findByName(String name) {
-    Path filePath = boardDirectory.resolve(name + ".md");
-    try {
-      String content = new String(Files.readAllBytes(filePath), StandardCharsets.UTF_8);
-      return new BoardDTO(name, content);
-    } catch (IOException e) {
-      return null;
-    }
+  public static void update(int id, String title, String content) throws SQLException {
+    new BoardDAO().update(id, title, content);
   }
 
-  public static BoardDTO findByURLName (String url) {
-    try {
-      if (url.startsWith("/")) url = url.substring(1);
-      String name = URLDecoder.decode(url, "UTF-8");
-      return findByName(name);
-    } catch (UnsupportedEncodingException e) {
-      throw new RuntimeException(e);
-    }
+  public static BoardDTO getByPathinfo(String pathinfo) throws NumberFormatException, SQLException {
+    int id = Integer.parseInt(pathinfo.substring(1));
+    return getById(id);
   }
 
-  public static boolean removeByTitle(String name) {
-    Path filePath = boardDirectory.resolve(name + ".md");
-    File file = filePath.toFile();
-    return file.delete();
+  public static BoardDTO getById(int id) throws SQLException {
+    return new BoardDAO().getBoardById(id);
   }
 
-  public static List<BoardDTO> list() throws IOException {
-    try (Stream<Path> stream = Files.list(boardDirectory)) {
-      return stream.map(p -> boardDirectory.relativize(p).toString().replaceAll("\\.md$", "")).map(BoardService::findByName).collect(Collectors.toList());
-    }
+  public static void removeByPathinfo(String pathinfo) throws NumberFormatException, SQLException {
+    int id = Integer.parseInt(pathinfo.substring(1));
+    removeById(id);
+  }
+
+  public static void removeById(int id) throws SQLException {
+    new BoardDAO().remove(id);
+  }
+
+  public static List<BoardDTO> list() throws SQLException {
+    return new BoardDAO().getAllBoards();
+
   }
 
 }

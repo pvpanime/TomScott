@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
 
 @WebServlet(name = "BoardReadController", urlPatterns = {"/board/read/*"})
 public class BoardReadController extends HttpServlet {
@@ -18,13 +19,20 @@ public class BoardReadController extends HttpServlet {
     req.setCharacterEncoding("UTF-8");
     resp.setCharacterEncoding("UTF-8");
 
-    BoardDTO dto = BoardService.findByURLName(req.getPathInfo());
-    if (dto == null) {
-      resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-    } else {
-      req.setAttribute("board", dto);
-      RequestDispatcher requestDispatcher = req.getRequestDispatcher("/WEB-INF/board/read.jsp");
-      requestDispatcher.forward(req, resp);
+    BoardDTO dto;
+    try {
+      dto = BoardService.getByPathinfo(req.getPathInfo());
+      if (dto == null) {
+        resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+      } else {
+        req.setAttribute("board", dto);
+        RequestDispatcher requestDispatcher = req.getRequestDispatcher("/WEB-INF/board/read.jsp");
+        requestDispatcher.forward(req, resp);
+      }
+    } catch (NumberFormatException e) {
+      resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+    } catch (SQLException e) {
+      resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 
   }

@@ -1,43 +1,33 @@
 package dev.nemi.tomscott.board;
 
-import org.apache.commons.text.StringEscapeUtils;
+import lombok.Getter;
+import lombok.SneakyThrows;
+import lombok.ToString;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.time.Instant;
 
+@ToString @Getter
 public class BoardDTO {
+  public final int id;
   public final String title;
   public final String content;
+  public final Instant createdAt;
+  public final Instant lastMod;
+  public final Integer userId;
 
-  public BoardDTO(String title, String content) {
+  public BoardDTO(int id, String title, String content, Instant createdAt, Instant lastMod, Integer userId) {
+    this.id = id;
     this.title = title;
     this.content = content;
+    this.createdAt = createdAt;
+    this.lastMod = lastMod;
+    this.userId = userId;
   }
 
-  public String getTitle() {
-    return title;
-  }
-
-  public String getContent() {
-    return content;
-  }
-
+  @SneakyThrows
   public String getPath() {
-    try {
-      return URLEncoder.encode(title, "UTF-8");
-    } catch (UnsupportedEncodingException e) {
-      // this is supported encoding, so there's no way to get here.
-      throw new RuntimeException(e);
-    }
-  }
-
-  public String getContentHTML() {
-    return StringEscapeUtils.escapeHtml4(content);
-  }
-
-  @Override
-  public String toString() {
-    return String.format("Board<title=%s, content=%s>", title, content);
+    return URLEncoder.encode(title, "UTF-8");
   }
 
 }

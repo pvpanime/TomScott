@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
 
 @WebServlet(name = "BoardWriteController", urlPatterns = {"/board/write"})
 public class BoardWriteController extends HttpServlet {
@@ -25,11 +26,10 @@ public class BoardWriteController extends HttpServlet {
     req.setCharacterEncoding("UTF-8");
     resp.setCharacterEncoding("UTF-8");
     try {
-      BoardDTO boardDTO = new BoardDTO(req.getParameter("title"), req.getParameter("content"));
-      BoardService.set(boardDTO);
-      resp.sendRedirect("/board/read/" + boardDTO.getPath());
-    } catch (IOException ioe) {
-      resp.sendError(500);
+      BoardService.createNew(req.getParameter("title"), req.getParameter("content"));
+      resp.sendRedirect("/board");
+    } catch (IOException | SQLException ioe) {
+      resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 }

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
 
 @WebServlet(name = "BoardIndexController", urlPatterns = {"/board"})
 public class BoardIndexController extends HttpServlet {
@@ -17,9 +18,14 @@ public class BoardIndexController extends HttpServlet {
     req.setCharacterEncoding("UTF-8");
     resp.setCharacterEncoding("UTF-8");
 
-    req.setAttribute("list", BoardService.list());
+    try {
+      req.setAttribute("list", BoardService.list());
+      RequestDispatcher rd = req.getRequestDispatcher("/WEB-INF/board/index.jsp");
+      rd.forward(req, resp);
+    } catch (SQLException e) {
+      resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
 
-    RequestDispatcher rd = req.getRequestDispatcher("/WEB-INF/board/index.jsp");
-    rd.forward(req, resp);
+
   }
 }

@@ -14,9 +14,9 @@
       <h1 class="display-1">Board Index</h1>
     </div>
     <ul class="list-group">
-      <c:forEach var="dto" items="${list}">
+      <c:forEach var="board" items="${list}">
         <li class="list-group-item">
-          <a href="/board/read/${dto.getPath()}" class="text-decoration-none text-light">${dto.getTitle()}</a>
+          <a href="/board/read/${board.getId()}" class="text-decoration-none text-light">${board.getTitle()}</a>
         </li>
       </c:forEach>
     </ul>

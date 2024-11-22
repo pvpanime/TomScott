@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
 
 @WebServlet(name = "BoardDeleteController", urlPatterns = {"/board/delete/*"})
 public class BoardDeleteController extends HttpServlet {
@@ -17,14 +18,12 @@ public class BoardDeleteController extends HttpServlet {
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     req.setCharacterEncoding("UTF-8");
     resp.setCharacterEncoding("UTF-8");
-
-    BoardDTO dto = BoardService.findByURLName(req.getPathInfo());
-    if (dto == null) {
-      resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-    } else {
-      BoardService.removeByTitle(dto.title);
+    try {
+      BoardService.removeByPathinfo(req.getPathInfo());
       RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/board/delete.jsp");
       dispatcher.forward(req, resp);
+    } catch (SQLException sex) {
+      resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 }

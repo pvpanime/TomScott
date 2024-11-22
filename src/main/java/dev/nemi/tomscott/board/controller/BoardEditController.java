@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
 
 @WebServlet(name = "BoardEditController", urlPatterns = {"/board/edit/*"})
 public class BoardEditController extends HttpServlet {
@@ -18,23 +19,40 @@ public class BoardEditController extends HttpServlet {
     req.setCharacterEncoding("UTF-8");
     resp.setCharacterEncoding("UTF-8");
 
-    BoardDTO dto = BoardService.findByURLName(req.getPathInfo());
-    if (dto == null) {
-      resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-      return;
-    }
-    req.setAttribute("board", dto);
+    BoardDTO dto = null;
+    try {
+      dto = BoardService.getByPathinfo(req.getPathInfo());
+      if (dto == null) {
+        resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+        return;
+      }
+      req.setAttribute("board", dto);
 
-    RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/board/edit.jsp");
-    dispatcher.forward(req, resp);
+      RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/board/edit.jsp");
+      dispatcher.forward(req, resp);
+    } catch (NumberFormatException n) {
+      resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+    } catch (SQLException e) {
+      resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
 
   }
 
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     req.setCharacterEncoding("UTF-8");
     resp.setCharacterEncoding("UTF-8");
-    BoardDTO boardDTO = new BoardDTO(req.getParameter("title"), req.getParameter("content"));
-    resp.sendRedirect("/board/read/" + boardDTO.getPath());
+    try {
+      int id = Integer.parseInt(req.getParameter("id"));
+      BoardDTO board = BoardService.getById(id);
+      BoardService.update(id, req.getParameter("title"), req.getParameter("content"));
+      resp.sendRedirect("/board/read/" + board.getId());
+    } catch (NumberFormatException n) {
+      resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+    } catch (SQLException e) {
+      resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
   }
+
+
 }
 
