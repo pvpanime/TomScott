@@ -16,7 +16,10 @@
     <ul class="list-group">
       <c:forEach var="board" items="${list}">
         <li class="list-group-item">
-          <a href="/board/read/${board.getId()}" class="text-decoration-none text-light">${board.getTitle()}</a>
+          <div class="d-flex justify-content-between">
+            <a href="/board/read/${board.getId()}" class="flex-grow-1 text-body text-decoration-none">${board.getTitle()}</a>
+            <span class="text-body-secondary">${board.getCreatedAt()}</span>
+          </div>
         </li>
       </c:forEach>
     </ul>

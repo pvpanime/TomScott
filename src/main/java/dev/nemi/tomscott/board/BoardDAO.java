@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BoardDAO {
@@ -29,9 +30,17 @@ public class BoardDAO {
 
   public void addNew(String title, String content) throws SQLException {
     @Cleanup Connection conn = TachibanaHikari.getConnection();
-    @Cleanup PreparedStatement ps = conn.prepareStatement("INSERT INTO Board(title, content) VALUES (?, ?)");
+    @Cleanup PreparedStatement ps = conn.prepareStatement("INSERT INTO Board(id, title, content) VALUES (weeb.create_id(), ?, ?)");
     ps.setString(1, title);
     ps.setString(2, content);
+    ps.executeUpdate();
+  }
+
+  public void addNew(BoardVO board) throws SQLException {
+    @Cleanup Connection conn = TachibanaHikari.getConnection();
+    @Cleanup PreparedStatement ps = conn.prepareStatement("INSERT INTO Board(id, title, content) VALUES (weeb.create_id(), ?, ?)");
+    ps.setString(1, board.getTitle());
+    ps.setString(2, board.getContent());
     ps.executeUpdate();
   }
 
@@ -44,12 +53,32 @@ public class BoardDAO {
     ps.executeUpdate();
   }
 
-  public List<BoardDTO> getAllBoards() throws SQLException {
-    return TachibanaHikari.getAll("SELECT * FROM Board", BoardDAO::complete);
+  public List<BoardDTO> getListAt() throws SQLException {
+    return getListAt(0, 50);
+  }
+
+  public List<BoardDTO> getListAt(int offset, int count) throws SQLException {
+    List<BoardDTO> list = new ArrayList<>();
+    @Cleanup Connection conn = TachibanaHikari.getConnection();
+    @Cleanup PreparedStatement ps = conn.prepareStatement("SELECT * FROM Board ORDER BY addTime DESC LIMIT ? OFFSET ?");
+    ps.setInt(1, count);
+    ps.setInt(2, offset);
+    @Cleanup ResultSet rs = ps.executeQuery();
+    while (rs.next()) {
+      list.add(complete(rs));
+    }
+    return list;
   }
 
   public BoardDTO getBoardById(int id) throws SQLException {
-    return TachibanaHikari.getOne("SELECT * FROM Board WHERE id = ?", BoardDAO::complete, id);
+    @Cleanup Connection conn = TachibanaHikari.getConnection();
+    @Cleanup PreparedStatement ps = conn.prepareStatement("SELECT * FROM Board WHERE id = ?");
+    ps.setInt(1, id);
+    @Cleanup ResultSet rs = ps.executeQuery();
+    if (rs.next()) {
+      return complete(rs);
+    }
+    return null;
   }
 
   public void remove(int id) throws SQLException {

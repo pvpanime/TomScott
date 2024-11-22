@@ -19,8 +19,8 @@
   <nav class="mt-4">
     <div class="d-flex justify-content-between">
       <a href="${pageContext.request.contextPath}/board" class="btn btn-secondary">Board List</a>
-      <a href="${pageContext.request.contextPath}/board/edit/${board.getPath()}" class="btn btn-warning">Edit</a>
-      <form action="${pageContext.request.contextPath}/board/delete/${board.getPath()}" method="post" class="mb-0">
+      <a href="${pageContext.request.contextPath}/board/edit/${board.getId()}" class="btn btn-warning">Edit</a>
+      <form action="${pageContext.request.contextPath}/board/delete/${board.getId()}" method="post" class="mb-0">
         <input type="submit" class="btn btn-danger" value="Delete">
       </form>
     </div>

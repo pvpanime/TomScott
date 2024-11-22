@@ -1,5 +1,7 @@
 package dev.nemi.tomscott.board;
 
+import lombok.Cleanup;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -49,8 +51,11 @@ public class BoardService {
   }
 
   public static List<BoardDTO> list() throws SQLException {
-    return new BoardDAO().getAllBoards();
+    return new BoardDAO().getListAt();
+  }
 
+  public static List<BoardDTO> list(int offset, int count) throws SQLException {
+    return new BoardDAO().getListAt(offset, count);
   }
 
 }

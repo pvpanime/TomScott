@@ -29,6 +29,7 @@ public class BoardWriteController extends HttpServlet {
       BoardService.createNew(req.getParameter("title"), req.getParameter("content"));
       resp.sendRedirect("/board");
     } catch (IOException | SQLException ioe) {
+      ioe.printStackTrace();
       resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
