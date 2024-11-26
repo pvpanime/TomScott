@@ -1,43 +1,45 @@
 package dev.nemi.tomscott.board;
 
-import lombok.Cleanup;
+import dev.nemi.tomscott.FightingSpirit;
+import dev.nemi.tomscott.board.dto.BoardAddDTO;
+import dev.nemi.tomscott.board.dto.BoardViewDTO;
+import org.modelmapper.ModelMapper;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.List;
 
 public class BoardService {
-  public static final Path boardDirectory;
 
-  static {
-    String homeDir = System.getProperty("user.home");
+  private final BoardDAO dao;
+  private final ModelMapper mapper;
 
-    boardDirectory = Paths.get(homeDir, ".board");
-    try {
-      if (!Files.exists(boardDirectory)) Files.createDirectories(boardDirectory);
-      else if (!Files.isDirectory(boardDirectory)) throw new RuntimeException(boardDirectory + " is not a directory");
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+  public BoardService() {
+    this.dao = new BoardDAO();
+    this.mapper = FightingSpirit.mapper;
+  }
+
+  public void add(BoardAddDTO dto) throws SQLException {
+    dao.insert(mapper.map(dto, BoardVO.class));
+  }
+
+  public List<BoardViewDTO> list() throws SQLException {
+    return dao.getListAt();
   }
 
   public static void createNew(String title, String content) throws SQLException {
-    new BoardDAO().addNew(title, content);
+    new BoardDAO().insert(BoardVO.builder().title(title).content(content).build());
   }
 
   public static void update(int id, String title, String content) throws SQLException {
     new BoardDAO().update(id, title, content);
   }
 
-  public static BoardDTO getByPathinfo(String pathinfo) throws NumberFormatException, SQLException {
+  public static BoardViewDTO getByPathinfo(String pathinfo) throws NumberFormatException, SQLException {
     int id = Integer.parseInt(pathinfo.substring(1));
     return getById(id);
   }
 
-  public static BoardDTO getById(int id) throws SQLException {
+  public static BoardViewDTO getById(int id) throws SQLException {
     return new BoardDAO().getBoardById(id);
   }
 
@@ -46,16 +48,8 @@ public class BoardService {
     removeById(id);
   }
 
-  public static void removeById(int id) throws SQLException {
+  public static void removeById(long id) throws SQLException {
     new BoardDAO().remove(id);
-  }
-
-  public static List<BoardDTO> list() throws SQLException {
-    return new BoardDAO().getListAt();
-  }
-
-  public static List<BoardDTO> list(int offset, int count) throws SQLException {
-    return new BoardDAO().getListAt(offset, count);
   }
 
 }

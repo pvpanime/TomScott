@@ -2,6 +2,7 @@ package dev.nemi.tomscott.board;
 
 
 import dev.nemi.tomscott.TachibanaHikari;
+import dev.nemi.tomscott.board.dto.BoardViewDTO;
 import lombok.Cleanup;
 
 import java.sql.Connection;
@@ -13,9 +14,9 @@ import java.util.List;
 
 public class BoardDAO {
 
-  private static BoardDTO complete(ResultSet rs) {
+  private static BoardViewDTO complete(ResultSet rs) {
     try {
-      return new BoardDTO(
+      return new BoardViewDTO(
         rs.getInt("id"),
         rs.getString("title"),
         rs.getString("content"),
@@ -28,15 +29,7 @@ public class BoardDAO {
     }
   }
 
-  public void addNew(String title, String content) throws SQLException {
-    @Cleanup Connection conn = TachibanaHikari.getConnection();
-    @Cleanup PreparedStatement ps = conn.prepareStatement("INSERT INTO Board(id, title, content) VALUES (weeb.create_id(), ?, ?)");
-    ps.setString(1, title);
-    ps.setString(2, content);
-    ps.executeUpdate();
-  }
-
-  public void addNew(BoardVO board) throws SQLException {
+  public void insert(BoardVO board) throws SQLException {
     @Cleanup Connection conn = TachibanaHikari.getConnection();
     @Cleanup PreparedStatement ps = conn.prepareStatement("INSERT INTO Board(id, title, content) VALUES (weeb.create_id(), ?, ?)");
     ps.setString(1, board.getTitle());
@@ -53,12 +46,12 @@ public class BoardDAO {
     ps.executeUpdate();
   }
 
-  public List<BoardDTO> getListAt() throws SQLException {
+  public List<BoardViewDTO> getListAt() throws SQLException {
     return getListAt(0, 50);
   }
 
-  public List<BoardDTO> getListAt(int offset, int count) throws SQLException {
-    List<BoardDTO> list = new ArrayList<>();
+  public List<BoardViewDTO> getListAt(int offset, int count) throws SQLException {
+    List<BoardViewDTO> list = new ArrayList<>();
     @Cleanup Connection conn = TachibanaHikari.getConnection();
     @Cleanup PreparedStatement ps = conn.prepareStatement("SELECT * FROM Board ORDER BY addTime DESC LIMIT ? OFFSET ?");
     ps.setInt(1, count);
@@ -70,7 +63,7 @@ public class BoardDAO {
     return list;
   }
 
-  public BoardDTO getBoardById(int id) throws SQLException {
+  public BoardViewDTO getBoardById(int id) throws SQLException {
     @Cleanup Connection conn = TachibanaHikari.getConnection();
     @Cleanup PreparedStatement ps = conn.prepareStatement("SELECT * FROM Board WHERE id = ?");
     ps.setInt(1, id);
@@ -81,10 +74,10 @@ public class BoardDAO {
     return null;
   }
 
-  public void remove(int id) throws SQLException {
+  public void remove(long id) throws SQLException {
     try (Connection conn = TachibanaHikari.getConnection()) {
       try (PreparedStatement ps = conn.prepareStatement("DELETE FROM Board WHERE id = ?")) {
-        ps.setInt(1, id);
+        ps.setLong(1, id);
         ps.executeUpdate();
       }
     }

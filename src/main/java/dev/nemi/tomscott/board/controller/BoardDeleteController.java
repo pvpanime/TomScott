@@ -1,6 +1,5 @@
 package dev.nemi.tomscott.board.controller;
 
-import dev.nemi.tomscott.board.BoardDTO;
 import dev.nemi.tomscott.board.BoardService;
 
 import javax.servlet.RequestDispatcher;
@@ -19,7 +18,7 @@ public class BoardDeleteController extends HttpServlet {
     req.setCharacterEncoding("UTF-8");
     resp.setCharacterEncoding("UTF-8");
     try {
-      BoardService.removeByPathinfo(req.getPathInfo());
+      BoardService.removeById(Long.parseLong(req.getParameter("id")));
       RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/board/delete.jsp");
       dispatcher.forward(req, resp);
     } catch (SQLException sex) {

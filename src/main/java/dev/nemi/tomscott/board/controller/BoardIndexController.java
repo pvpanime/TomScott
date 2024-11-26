@@ -13,13 +13,22 @@ import java.sql.SQLException;
 
 @WebServlet(name = "BoardIndexController", urlPatterns = {"/board"})
 public class BoardIndexController extends HttpServlet {
+
+  private BoardService boardService;
+
+  @Override
+  public void init() throws ServletException {
+    super.init();
+    boardService = new BoardService();
+  }
+
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     req.setCharacterEncoding("UTF-8");
     resp.setCharacterEncoding("UTF-8");
 
     try {
-      req.setAttribute("list", BoardService.list());
+      req.setAttribute("list", boardService.list());
       RequestDispatcher rd = req.getRequestDispatcher("/WEB-INF/board/index.jsp");
       rd.forward(req, resp);
     } catch (SQLException e) {

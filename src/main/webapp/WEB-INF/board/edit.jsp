@@ -1,4 +1,4 @@
-<%--@elvariable id="board" type="dev.nemi.tomscott.board.BoardDTO"--%>
+<%--@elvariable id="board" type="dev.nemi.tomscott.board.dto.BoardViewDTO"--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>

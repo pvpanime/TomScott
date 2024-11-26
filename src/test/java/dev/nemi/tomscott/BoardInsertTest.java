@@ -12,7 +12,7 @@ public class BoardInsertTest {
   @Test
   public void test() throws SQLException {
     BoardDAO dao = new BoardDAO();
-    dao.addNew(BoardVO.builder().title("Test title").content("Test Content").build());
+    dao.insert(BoardVO.builder().title("Test title").content("Test Content").build());
   }
 
   @Test

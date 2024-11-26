@@ -1,4 +1,9 @@
-package dev.nemi.tomscott.food;
+package dev.nemi.tomscott.food.controller;
+
+import dev.nemi.tomscott.food.FoodDAO;
+import dev.nemi.tomscott.food.FoodService;
+import dev.nemi.tomscott.food.FoodVO;
+import dev.nemi.tomscott.food.dto.FoodWholeUpdateDTO;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,20 +17,23 @@ import java.sql.SQLException;
 @WebServlet(urlPatterns = {"/food/update"})
 public class FoodUpdateController extends HttpServlet {
 
+  private FoodService service;
+
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+  public void init() throws ServletException {
+    service = new FoodService();
+  }
+
+  @Override
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     req.setCharacterEncoding("UTF-8");
     resp.setCharacterEncoding("UTF-8");
     try {
-      String id = req.getParameter("id");
+      String idString = req.getParameter("id");
+      long id = Long.parseLong(idString);
       String name = req.getParameter("name");
       String description = req.getParameter("description");
-      new FoodDAO().update(
-        FoodVO.builder()
-          .id(Long.parseLong(id))
-          .name(name)
-          .description(description)
-          .build());
+      service.update(FoodWholeUpdateDTO.builder().id(id).name(name).description(description).build());
       PrintWriter out = resp.getWriter();
       resp.setStatus(HttpServletResponse.SC_OK);
       out.println("200 OK");

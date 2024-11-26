@@ -1,6 +1,6 @@
 package dev.nemi.tomscott.board.controller;
 
-import dev.nemi.tomscott.board.BoardDTO;
+import dev.nemi.tomscott.board.dto.BoardViewDTO;
 import dev.nemi.tomscott.board.BoardService;
 
 import javax.servlet.RequestDispatcher;
@@ -19,7 +19,7 @@ public class BoardEditController extends HttpServlet {
     req.setCharacterEncoding("UTF-8");
     resp.setCharacterEncoding("UTF-8");
 
-    BoardDTO dto = null;
+    BoardViewDTO dto = null;
     try {
       dto = BoardService.getByPathinfo(req.getPathInfo());
       if (dto == null) {
@@ -43,7 +43,7 @@ public class BoardEditController extends HttpServlet {
     resp.setCharacterEncoding("UTF-8");
     try {
       int id = Integer.parseInt(req.getParameter("id"));
-      BoardDTO board = BoardService.getById(id);
+      BoardViewDTO board = BoardService.getById(id);
       BoardService.update(id, req.getParameter("title"), req.getParameter("content"));
       resp.sendRedirect("/board/read/" + board.getId());
     } catch (NumberFormatException n) {

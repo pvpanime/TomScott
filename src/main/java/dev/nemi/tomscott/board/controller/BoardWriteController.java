@@ -1,6 +1,5 @@
 package dev.nemi.tomscott.board.controller;
 
-import dev.nemi.tomscott.board.BoardDTO;
 import dev.nemi.tomscott.board.BoardService;
 
 import javax.servlet.RequestDispatcher;

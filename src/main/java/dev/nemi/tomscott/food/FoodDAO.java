@@ -1,6 +1,8 @@
 package dev.nemi.tomscott.food;
 
 import dev.nemi.tomscott.TachibanaHikari;
+import dev.nemi.tomscott.food.dto.FoodDescriptionUpdateDTO;
+import dev.nemi.tomscott.food.dto.FoodNameUpdateDTO;
 import lombok.Cleanup;
 import org.jetbrains.annotations.NotNull;
 
@@ -67,7 +69,7 @@ public class FoodDAO {
     ps.executeUpdate();
   }
 
-  public void update(@NotNull FoodDescriptionDTO foodDescriptionDTO) throws SQLException {
+  public void update(@NotNull FoodDescriptionUpdateDTO foodDescriptionDTO) throws SQLException {
     @Cleanup Connection conn = TachibanaHikari.getConnection();
     @Cleanup PreparedStatement ps = conn.prepareStatement("UPDATE Food SET description = ? WHERE id = ?");
     ps.setString(1, foodDescriptionDTO.getDescription());

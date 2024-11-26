@@ -1,13 +1,15 @@
 package dev.nemi.tomscott.food;
 
 
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
+import org.checkerframework.checker.units.qual.A;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
-@Value
 public class FoodVO {
-  long id;
-  String name;
-  String description;
+  private long id;
+  private String name;
+  private String description;
 }

@@ -1,6 +1,6 @@
 package dev.nemi.tomscott.board.controller;
 
-import dev.nemi.tomscott.board.BoardDTO;
+import dev.nemi.tomscott.board.dto.BoardViewDTO;
 import dev.nemi.tomscott.board.BoardService;
 
 import javax.servlet.RequestDispatcher;
@@ -19,7 +19,7 @@ public class BoardReadController extends HttpServlet {
     req.setCharacterEncoding("UTF-8");
     resp.setCharacterEncoding("UTF-8");
 
-    BoardDTO dto;
+    BoardViewDTO dto;
     try {
       dto = BoardService.getByPathinfo(req.getPathInfo());
       if (dto == null) {
