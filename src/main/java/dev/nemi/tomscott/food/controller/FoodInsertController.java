@@ -1,9 +1,7 @@
 package dev.nemi.tomscott.food.controller;
 
-import dev.nemi.tomscott.food.FoodDAO;
 import dev.nemi.tomscott.food.FoodService;
-import dev.nemi.tomscott.food.FoodVO;
-import dev.nemi.tomscott.food.dto.FoodWholeUpdateDTO;
+import dev.nemi.tomscott.food.dto.FoodAddDTO;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,8 +12,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 
-@WebServlet(urlPatterns = {"/food/update"})
-public class FoodUpdateController extends HttpServlet {
+@WebServlet(urlPatterns = {"/food/insert"})
+public class FoodInsertController extends HttpServlet {
 
   private FoodService service;
 
@@ -29,13 +27,11 @@ public class FoodUpdateController extends HttpServlet {
 //    req.setCharacterEncoding("UTF-8");
 //    resp.setCharacterEncoding("UTF-8");
     try {
-      String idString = req.getParameter("id");
-      long id = Long.parseLong(idString);
       String name = req.getParameter("name");
       String description = req.getParameter("description");
       String priceString = req.getParameter("price");
       long price = Long.parseLong(priceString);
-      service.update(FoodWholeUpdateDTO.builder().id(id).name(name).description(description).price(price).build());
+      service.add(FoodAddDTO.builder().name(name).description(description).price(price).build());
       PrintWriter out = resp.getWriter();
       resp.setStatus(HttpServletResponse.SC_OK);
       out.println("200 OK");

@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class FoodAddDTO {
   private String name;
   private String description;
+  private long price;
 }

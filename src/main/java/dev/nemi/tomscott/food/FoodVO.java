@@ -12,4 +12,5 @@ public class FoodVO {
   private long id;
   private String name;
   private String description;
+  private long price;
 }

@@ -1,8 +1,6 @@
 package dev.nemi.tomscott.food;
 
 import dev.nemi.tomscott.TachibanaHikari;
-import dev.nemi.tomscott.food.dto.FoodDescriptionUpdateDTO;
-import dev.nemi.tomscott.food.dto.FoodNameUpdateDTO;
 import lombok.Cleanup;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,13 +15,14 @@ public class FoodDAO {
   public List<FoodVO> getAll() throws SQLException {
     List<FoodVO> list = new ArrayList<>();
     @Cleanup Connection conn = TachibanaHikari.getConnection();
-    @Cleanup PreparedStatement ps = conn.prepareStatement("SELECT * FROM Food");
+    @Cleanup PreparedStatement ps = conn.prepareStatement("SELECT * FROM Food WHERE status > 0;");
     @Cleanup ResultSet rs = ps.executeQuery();
     while (rs.next()) {
       list.add(FoodVO.builder()
         .id(rs.getLong("id"))
         .name(rs.getString("name").trim())
         .description(rs.getString("description").trim())
+        .price(rs.getLong("wonPrice"))
         .build());
     }
     return list;
@@ -31,7 +30,7 @@ public class FoodDAO {
 
   public FoodVO getById(long id) throws SQLException {
     @Cleanup Connection conn = TachibanaHikari.getConnection();
-    @Cleanup PreparedStatement ps = conn.prepareStatement("SELECT * FROM Food WHERE id = ?");
+    @Cleanup PreparedStatement ps = conn.prepareStatement("SELECT * FROM Food WHERE id = ? AND status > 0;");
     ps.setLong(1, id);
     @Cleanup ResultSet rs = ps.executeQuery();
     if (rs.next()) {
@@ -39,6 +38,7 @@ public class FoodDAO {
         .id(rs.getLong("id"))
         .name(rs.getString("name").trim())
         .description(rs.getString("description").trim())
+        .price(rs.getLong("wonPrice"))
         .build();
     }
     return null;
@@ -46,34 +46,20 @@ public class FoodDAO {
 
   public void add(@NotNull FoodVO food) throws SQLException {
     @Cleanup Connection conn = TachibanaHikari.getConnection();
-    @Cleanup PreparedStatement ps = conn.prepareStatement("INSERT INTO Food (name, description) VALUES (?, ?)");
+    @Cleanup PreparedStatement ps = conn.prepareStatement("INSERT INTO Food (name, description, wonPrice) VALUES (?, ?, ?)");
     ps.setString(1, food.getName());
     ps.setString(2, food.getDescription());
+    ps.setLong(3, food.getPrice());
     ps.executeUpdate();
   }
 
   public void update(@NotNull FoodVO food) throws SQLException {
     @Cleanup Connection conn = TachibanaHikari.getConnection();
-    @Cleanup PreparedStatement ps = conn.prepareStatement("UPDATE Food SET name = ?, description = ? WHERE id = ?");
+    @Cleanup PreparedStatement ps = conn.prepareStatement("UPDATE Food SET name = ?, description = ?, wonPrice = ? WHERE id = ?");
     ps.setString(1, food.getName());
     ps.setString(2, food.getDescription());
-    ps.setLong(3, food.getId());
-    ps.executeUpdate();
-  }
-
-  public void update(@NotNull FoodNameUpdateDTO foodNameUpdateDTO) throws SQLException {
-    @Cleanup Connection conn = TachibanaHikari.getConnection();
-    @Cleanup PreparedStatement ps = conn.prepareStatement("UPDATE Food SET name = ? WHERE id = ?");
-    ps.setString(1, foodNameUpdateDTO.getName());
-    ps.setLong(2, foodNameUpdateDTO.getId());
-    ps.executeUpdate();
-  }
-
-  public void update(@NotNull FoodDescriptionUpdateDTO foodDescriptionDTO) throws SQLException {
-    @Cleanup Connection conn = TachibanaHikari.getConnection();
-    @Cleanup PreparedStatement ps = conn.prepareStatement("UPDATE Food SET description = ? WHERE id = ?");
-    ps.setString(1, foodDescriptionDTO.getDescription());
-    ps.setLong(2, foodDescriptionDTO.getId());
+    ps.setLong(3, food.getPrice());
+    ps.setLong(4, food.getId());
     ps.executeUpdate();
   }
 

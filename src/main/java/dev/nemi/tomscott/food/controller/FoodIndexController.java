@@ -25,8 +25,8 @@ public class FoodIndexController extends HttpServlet {
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    req.setCharacterEncoding("UTF-8");
-    resp.setCharacterEncoding("UTF-8");
+//    req.setCharacterEncoding("UTF-8");
+//    resp.setCharacterEncoding("UTF-8");
 
     try {
       req.setAttribute("foods", service.listAll());
@@ -40,13 +40,13 @@ public class FoodIndexController extends HttpServlet {
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    req.setCharacterEncoding("UTF-8");
-    resp.setCharacterEncoding("UTF-8");
+//    req.setCharacterEncoding("UTF-8");
+//    resp.setCharacterEncoding("UTF-8");
 
     try {
       String name = req.getParameter("name");
       String description = req.getParameter("description");
-      service.insert(FoodAddDTO.builder().name(name).description(description).build());
+      service.add(FoodAddDTO.builder().name(name).description(description).build());
       resp.setStatus(HttpServletResponse.SC_OK);
     } catch (SQLException e) {
       e.printStackTrace();
@@ -56,8 +56,8 @@ public class FoodIndexController extends HttpServlet {
 
   @Override
   protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    req.setCharacterEncoding("UTF-8");
-    resp.setCharacterEncoding("UTF-8");
+//    req.setCharacterEncoding("UTF-8");
+//    resp.setCharacterEncoding("UTF-8");
 
     resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
   }

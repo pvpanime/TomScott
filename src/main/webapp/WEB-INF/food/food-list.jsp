@@ -15,34 +15,38 @@
 </head>
 <body data-bs-theme="dark">
 <style>
-    #the-fucking-dialog {
+    #the-modal-dialog {
         border-radius: 8px;
+        width: max(45vw, 300px);
     }
-
     tbody tr {
         cursor: pointer;
     }
 </style>
-<dialog id="the-fucking-dialog">
-  <div id="stop-propagation">
+<dialog id="the-modal-dialog">
     <form method="dialog" action="#" id="my-fucking-form">
       <input id="food-id" type="hidden" name="id"/>
       <div class="row mb-3">
         <label for="food-name" class="col-sm-4 col-form-label">Food Name:</label>
-        <div class="col-sm-10">
+        <div class="width-100">
           <input id="food-name" class="form-control" type="text" name="name"/>
         </div>
       </div>
       <div class="row mb-3">
-        <label for="food-desc" class="col-sm-4 col-form-label">Description:</label>
-        <div class="col-sm-10">
-          <input id="food-desc" class="form-control" type="text" name="description"/>
+        <label for="food-price" class="col-sm-4 col-form-label">Price:</label>
+        <div class="width-100">
+          <input id="food-price" class="form-control" type="number" name="price"/>
         </div>
       </div>
-      <input class="btn btn-primary" type="submit" value="Change"/>
-      <button class="btn btn-danger" value="cancel" formmethod="dialog">Cancel</button>
+      <div class="row mb-3">
+        <label for="food-desc" class="col-sm-4 col-form-label">Description:</label>
+        <div class="width-100">
+          <textarea id="food-desc" class="form-control" name="description" rows="6"></textarea>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="submit-button">Submit</button>
+      <button class="btn btn-danger" id="cancel-button">Cancel</button>
     </form>
-  </div>
 </dialog>
 <div class="jumbotron jumbotron-fluid">
   <div class="container">
@@ -51,56 +55,99 @@
 </div>
 <div class="container">
   <table id="main-table" class="table table-hover">
-    <thead>
+    <thead class="text-center">
     <tr>
       <th>이름</th>
+      <th>가격(원)</th>
       <th>설명</th>
     </tr>
     </thead>
     <tbody>
     <c:forEach var="food" items="${foods}">
-      <tr data-id="${food.id}" onclick="openDialog('${food.id}', '${food.name}', '${food.description}')">
+      <tr data-id="${food.id}" onclick="openDialogUsing('${food.id}')">
         <td>${food.name}</td>
+        <td class="text-end">${food.getPriceView()}</td>
         <td>${food.description}</td>
       </tr>
     </c:forEach>
     </tbody>
   </table>
+  <button type="button" class="btn btn-primary" onclick="openDialogForNew()">New</button>
 </div>
 <script>
-    const dialog = document.getElementById("the-fucking-dialog");
+    const dialog = document.getElementById("the-modal-dialog");
+    const foodIdInput = document.getElementById("food-id")
+    const foodNameInput = document.getElementById("food-name")
+    const foodPriceInput = document.getElementById("food-price")
+    const foodDescInput = document.getElementById("food-desc")
+    let mode = null;
 
-    document.getElementById("stop-propagation").addEventListener('click', (event) => {
-        event.stopPropagation();
-    });
-
-    function openDialog(id, name, description) {
-        document.getElementById("food-id").value = id;
-        document.getElementById("food-name").value = name;
-        document.getElementById("food-desc").value = description;
+    function openDialog(id, name, price, description) {
+        foodIdInput.value = id;
+        foodNameInput.value = name;
+        foodPriceInput.value = price;
+        foodDescInput.value = description;
+        mode = 'update'
         dialog.showModal();
     }
 
-    const myFuckingForm = document.getElementById('my-fucking-form')
-    myFuckingForm.addEventListener('submit', function (event) {
-        event.preventDefault();
-        const body = new URLSearchParams(new FormData(myFuckingForm));
+    function openDialogUsing(id) {
+        fetch('/food/get/' + id).then(res => {
+            if (res.ok) return res.text();
+            else throw new Error(res.statusText);
+        }).then(text => {
+            if (text.endsWith('\n')) text = text.substring(0, text.length - 1);
+            const [id, name, price, ...descriptionRows] = text.split('\n')
+            openDialog(id, name, price, descriptionRows.join("\n"));
+        }).catch(err => {
+            console.error(err);
+        })
+    }
+
+    function openDialogForNew() {
+        foodIdInput.value = '';
+        foodNameInput.value = '';
+        foodPriceInput.value = '';
+        foodDescInput.value = '';
+        mode = 'insert'
+        dialog.showModal();
+    }
+
+    function requestUpdate() {
+        const body = new URLSearchParams({
+            id: foodIdInput.value,
+            name: foodNameInput.value,
+            price: foodPriceInput.value,
+            description: foodDescInput.value
+        });
         fetch('/food/update', {
             method: 'POST',
             body: body,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-        }).then(response => {
-            if (response.ok) {
-                location.reload();
-            }
-        }).catch(err => {
-            window.alert("으악!! HTTP 오류가 발생했습니다! Console을 확인하세요")
-            console.error(err);
-        })
-        dialog.close()
-    });
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        }).then(response => (response.ok) && location.reload())
+    }
+
+    function requestInsert() {
+        const body = new URLSearchParams({
+            name: foodNameInput.value,
+            price: foodPriceInput.value,
+            description: foodDescInput.value
+        });
+        fetch('/food/insert', {
+            method: 'POST',
+            body: body,
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }).then(response => (response.ok) && location.reload())
+    }
+
+    function doSubmit() {
+        if (mode === 'update') requestUpdate()
+        else if (mode === 'insert') requestInsert()
+    }
+
+    document.getElementById('submit-button').addEventListener('click', doSubmit)
+    document.getElementById('cancel-button').addEventListener('click', () => dialog.close());
+
 </script>
 </body>
 </html>
